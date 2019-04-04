@@ -1,0 +1,28 @@
+{% extends 'base_osint.html' %}
+
+{% block content %}
+{% load bootstrap4 %}
+<h3>Create new jobs:</h3>
+<br>
+{% bootstrap_button "Schedule a job" button_type="link" button_class="btn-secondary" href="job_create/" %}
+<div><br></div>
+{% if all_jobs %}
+    <h3>Bellow the list of the saved jobs:</h3>
+    <br>
+    <ul class="list-group">
+		{% for job in all_jobs %}
+            <li class="list-group-item">{{ job.name }}
+                <div class="btn-group float-right" role="group">
+                    <a  href="{% url 'job_update' job.id %}" type="submit" class="btn btn-secondary">Update</a>
+                    <a  href="{% url 'job_delete' job.id %}" type="submit" class="btn btn-secondary">Delete</a>
+                </div>
+            </li>
+		{% endfor %}
+	</ul>
+
+
+{% else %}
+	<h3>You dont have any jobs</h3>
+{% endif %}
+
+{% endblock %}

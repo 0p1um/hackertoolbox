@@ -1,0 +1,43 @@
+{% extends "base_osint.html" %}
+
+{% block content %}
+{% load bootstrap4 %}
+
+
+{% if object.task_path == 'google_search' %}
+<p><strong>Query:</strong> {{ object.query }}</p>
+<p><strong>Number of results:</strong> {{ object.num}}</p>
+<p><strong>Date restriction in days:</strong> {{ object.date_restrict_d }}</p>
+<p><strong>:</strong> {{ object.exact_terms }}</p>
+<p><strong>Task kwargs:</strong> {{ object.file_type }}</p>
+<p><strong>Content type:</strong> {{ object.gl }}</p>
+<p><strong>Content encoding:</strong> {{ object.links_site }}</p>
+<p><strong>Status:</strong> {{ object.lr }}</p>
+<p><strong>Raw result:</strong> {{ object.or_terms }}</p>
+<p><strong>Raw result:</strong> {{ object.related_site }}</p>
+<p><strong>Raw result:</strong> {{ object.sort }}</p>
+<p><strong>Raw result:</strong> {{ object.site_search }}</p>
+<p><strong>Raw result:</strong> {{ object.search_type }}</p>
+
+query = models.CharField(max_length=1000, verbose_name='Query')
+num = models.PositiveIntegerField(blank=True, null=True, verbose_name='Number of result to keep')
+date_restrict_d = models.PositiveIntegerField(blank=True, null=True, verbose_name='Date restriction: number of days old maximum for results')
+exact_terms = models.CharField(null=True, max_length=1000, blank=True, verbose_name='Exact terms to include in the search')
+file_type = models.CharField(null=True,max_length=4, choices=FILE_TYPE_CHOICES, blank=True, verbose_name='File type searched')
+gl = models.CharField(null=True, max_length=2, choices=GL_CHOICES, blank=True, verbose_name='Geo location of the search request')
+link_site = models.URLField(null=True, max_length=2000, blank=True, verbose_name='Link that must be in the search results')
+lr = models.CharField(null=True, max_length=10, choices=LR_CHOICES, blank=True, verbose_name='Language restriction: results must be in that language')
+or_terms = models.CharField(null=True, max_length=1000,blank=True, verbose_name='Additional query field with OR operator')
+related_site = models.URLField(null=True, max_length=2000, blank=True, verbose_name='URL, results must be related to it. Search results that are similar to this field')
+sort = models.CharField(null=True, max_length=4, choices=SORT_CHOICES, blank=True, verbose_name='Results are sort by it')
+site_search = models.CharField(null=True, max_length=255, blank=True, verbose_name='Particular domain, results must be from this domain')
+search_type = models.CharField(null=True, max_length=5, choices=SEARCH_CHOICES, blank=True, verbose_name='Search type: Webpage or Images')
+
+
+{% elif task.task_path == 'advanced_crawler' %}
+
+{% elif task.task_path == 'pgp_search' %}
+
+
+{% endfor %}
+{% endblock %}

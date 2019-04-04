@@ -1,0 +1,13 @@
+[Unit]
+Description=Hacker toolbox web interface.
+After=network.target
+
+[Service]
+Type=simple
+User=daemon
+Group=daemon
+WorkingDirectory=/path/to/hackertoobox
+ExecStart=/usr/bin/python3 manage.py runserver  --insecure 0:8000
+
+[Install]
+WantedBy=multi-user.target

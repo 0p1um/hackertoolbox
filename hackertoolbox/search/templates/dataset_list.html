@@ -1,0 +1,20 @@
+{% extends 'base_search.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% bootstrap_button "Refresh datasets" button_type="link" button_class="btn-secondary" href="refresh_datasets/" %}
+Refresh dataset, if you have hadded datasets in the datasets directory, refresh datasets to let them apear in the list bellow to use them.
+{% if all_dataset %}
+<br>
+<h3>Bellow the list of the saved tasks:</h3>
+<br>
+    <ul class="list-group">
+        {% for dataset in all_dataset %}
+        <li class="list-group-item text-center">{{ dataset.name }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,16 @@
+[Unit]
+Description=Hacker toolbox beatd scheduler.
+After=network.target
+
+[Service]
+Type=simple
+User=daemon
+Group=daemon
+WorkingDirectory=/path/to/hackertoobox
+EnvironmentFile=/etc/hackertoolbox/hackertoolbox.conf
+ExecStart=/bin/sh -c '${CELERY_BIN} -A ${CELERY_APP} beat \
+ --pidfile=/tmp/beat.pid -l info \
+ --scheduler=django_celery_beat.schedulers:DatabaseScheduler'
+
+[Install]
+WantedBy=multi-user.target

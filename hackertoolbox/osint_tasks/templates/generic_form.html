@@ -1,0 +1,14 @@
+{% extends 'base_osint.html' %}
+
+{% block content %}
+{% load bootstrap4 %}
+<div id="formulaire" style="display:block">
+<form id="formulaire"method="POST">
+    {% csrf_token %}
+    {% bootstrap_form form layout='block' %}
+<button type="submit" class="btn btn-secondary">Let's go !</button>
+</form>
+</div>
+
+{% endblock %}
+{}

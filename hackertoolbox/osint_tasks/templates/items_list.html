@@ -1,0 +1,137 @@
+{% extends 'base_osint.html' %}
+
+{% block content %}
+{% load static %}
+{% load bootstrap4 %}
+
+<link rel="stylesheet" type="text/css" href="/static/datatables.min.css" />
+<script type="text/javascript" src="/static/pdfmake.min.js"></script>
+<script type="text/javascript" src="/static/vfs_fonts.js"></script>
+<script type="text/javascript" src="/static/datatables.min.js"></script>
+
+<script>$(document).ready(function () {
+        $.extend($.fn.dataTable.defaults, {
+            dom: 'Bfrtip'
+        });
+        $("#table_id").DataTable({
+            buttons: [
+                'copy', 'excel', 'pdf'
+            ],
+            initComplete: function () {
+                this.api().columns([0, 1, 2]).every(function () {
+                    var column = this;
+                    var select = $('<select><option value=""></option></select>')
+                        .appendTo($(column.header([5, 6, 7])))
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex(
+                                $(this).val()
+                            );
+
+                            column
+                                .search(val ? '^' + val + '$' : '', true, false)
+                                .draw();
+                        });
+
+                    column.data().unique().sort().each(function (d, j) {
+                        select.append('<option value="' + d + '">' + d.substr(0, 40) + '</option>')
+                    });
+                });
+            }
+        });
+    });
+    $('body .dropdown-toggle').dropdown(); 
+</script>
+
+{% if request.path != '/osint/items/' %}
+<div class="alert alert-success" role="alert"><a href="{% url 'results' %}" class="alert-link">Transform launch !
+        Results will be avalable soon ...</a></div>
+{% endif %}
+
+<h3>List of items:</h3>
+<br>
+<table id="table_id" class="table table-striped table-bordered display" style="width:100%">
+    <thead>
+        <tr class="success">
+            <th>Date</th>
+            <th>Type</th>
+            <th>Abstract type</th>
+            <th>Data</th>
+            <th>Transform</th>
+        </tr>
+        <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if all_items %}
+        {% for item in all_items %}
+        {% for subitem in item.list_of_subitems %}
+        <tr>
+            <td>{{ subitem.date|date:"d/m/Y H:i" }}</td>
+            <td>{{ subitem.type }}</td>
+            <td>{{ subitem.abstract_type }}</td>
+            <td>{% if subitem.data|length > 100 %}{{ subitem.data|truncatechars:100 }}
+                <span>
+                    <div class="dropdown">
+                        <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#">Show full data
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                            {{ subitem.data }}
+                        </ul>
+                    </div>
+                </span>
+                {% else %}
+                {{ subitem.data }}
+                {% endif %}
+            </td>
+            <td>
+                <div class="dropdown" data-toggle="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Dropdown button
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        {% for transform in subitem.transform %}
+                        {% if transform == 'ct_search' %}
+                        <a class="dropdown-item" href="{% url 'run_transform' %}?transform=ct_search&data={{ subitem.data }}">Certificate
+                                Transparency</a>
+                        {% elif transform == 'google_search' %}
+                        <a class="dropdown-item" href="{% url 'run_transform' %}?transform=google_search&data={{ subitem.data }}">Google
+                                Search</a>
+                        {% elif transform == 'pgp_search' %}
+                        <a class="dropdown-item" href="{% url 'run_transform' %}?transform=pgp_search&data={{ subitem.data }}">Pgp
+                                Search</a>
+                        {% elif transform == 'advanced_crawler' %}
+                        <a class="dropdown-item" href="{% url 'run_transform' %}?transform=advanced_crawler&data={{ subitem.data }}">Advanced
+                                Crawler</a>                        
+                        {% elif transform == 'dns_lookup' %}
+                        <a class="dropdown-item" href="{% url 'run_transform' %}?transform=dns_lookup&data={{ subitem.data }}">Advanced
+                                Crawler</a>
+                        {% else %}
+                        <a class="dropdown-item" href="#">{{ transform }}</a>
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+        {% endfor %}
+        {% endif %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th>Date</th>
+            <th>Type</th>
+            <th>Abstract type</th>
+            <th>Data</th>
+            <th>Transform</th>
+        </tr>
+    </tfoot>
+
+</table>
+
+{% endblock %}

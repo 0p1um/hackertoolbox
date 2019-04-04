@@ -1,0 +1,172 @@
+{% extends "base_osint.html" %}
+
+{% block content %}
+{% load bootstrap4 %}
+
+<h2>Task information:</h2>
+<ul class="list-group">
+    <li class="list-group-item"><strong>Date done:</strong> {{ object.date_done|date:"d/m/Y H:i" }}</li>
+    <li class="list-group-item"><strong>Task name:</strong> {{ object.task_name}}</li>
+    <li class="list-group-item"><strong>Task id:</strong> {{ object.task_id }}</li>
+    <li class="list-group-item"><strong>Task args:</strong> {{ object.task_args }}</li>
+    <li class="list-group-item"><strong>Task kwargs:</strong> {{ object.task_kwargs }}</li>
+    <li class="list-group-item"><strong>Content type:</strong> {{ object.content_type }}</li>
+    <li class="list-group-item"><strong>Content encoding:</strong> {{ object.content_encoding }}</li>
+    <li class="list-group-item"><strong>Status:</strong> {{ object.status }}</li>
+    <li class="list-group-item"><strong>Raw result:</strong> {% if object.result|length > 400 %}{{ object.result|truncatechars:400 }}
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">Show full data
+                <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                {{ object.result }}
+            </ul>
+        </div>
+        {% else %}
+        {{ object.result }}
+        {% endif %}
+    </li>
+    {# data specific to a type of task #}
+    {% if object.task_name == 'google_search' %}
+    <li class="list-group-item"><strong>Search time:</strong> {{ object.search_time }}</li>
+    <li class="list-group-item"><strong>Total results:</strong> {{ object.total_results }}</li>
+    {% endif %}
+</ul>
+<br>
+{% if object.task_name == 'google_search' %}
+{# partie items #}
+<h2>{{ object.itemgooglesearch_set.all|length }} Items gathered:</h2>
+<br>
+{% for item in object.itemgooglesearch_set.all %}
+<ul class="list-group">
+    <li class="list-group-item"><strong>Title:</strong> {{ item.title }}</li>
+    <li class="list-group-item"><strong>Url:</strong> {{ item.link }}</li>
+    <li class="list-group-item"><strong>Snippet:</strong> {{ item.snippet }}</li>
+</ul>
+<br>
+{% endfor %}
+
+{% elif object.task_name == 'pgp_search' %}
+<h2>{{ object.itempgpsearch_set.all|length }} Items gathered:</h2>
+<br>
+{% for item in object.itempgpsearch_set.all %}
+<ul class="list-group">
+    <li class="list-group-item"><strong>Name:</strong> {{ item.name }}</li>
+    <li class="list-group-item"><strong>Email:</strong> {{ item.email }}</li>
+    <li class="list-group-item"><strong>Public key fingerprint:</strong> {{ item.public_key_fingerprint }}</li>
+</ul>
+<br>
+{% endfor %}
+
+{% elif object.task_name == 'dns_lookup' %}
+<h2>{{ object.itemdnslookup_set.all|length }} Items gathered:</h2>
+<br>
+{% for item in object.itemdnslookup_set.all %}
+<ul class="list-group">
+    <li class="list-group-item"><strong>Query:</strong> {{ item.query }}</li>
+    <li class="list-group-item"><strong>Record type:</strong> {{ item.record_type }}</li>
+    <li class="list-group-item"><strong>Result:</strong> {{ item.result }}</li>
+</ul>
+<br>
+{% endfor %}
+
+{% elif object.task_name == 'advanced_crawler' %}
+<h2>{{ object.itemadvancedcrawler_set.all|length }} Items gathered:</h2>
+<br>
+{% for item in object.itemadvancedcrawler_set.all %}
+<ul class="list-group">
+    <li class="list-group-item"><strong>Source code:</strong> {% if item.source_code|length > 400 %}{{ item.source_code|truncatechars:400 }}
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">Show full data
+                <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                {{ item.source_code }}
+            </ul>
+        </div>
+        {% else %}
+        {{ item.source_code }}
+        {% endif %}</li>
+    <li class="list-group-item"><strong>Url:</strong> {{ item.url }}</li>
+    <li class="list-group-item"><strong>Urls in page:</strong></li>
+    {% for e in item.list_of_subitems %}
+    {% if e.type == 'advanced crawler url' %}
+        <li class="list-group-item list-group-item-secondary">{{ e.data }}</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+<br>
+{% endfor %}
+
+{% elif object.task_name == 'ct_search' %}
+<h2>{{ object.itemcertificatetransparency_set.all|length }} Items gathered:</h2>
+<br>
+<ul class="list-group">
+{% for item in object.itemcertificatetransparency_set.all %}
+    <li class="list-group-item"><strong>Domain:</strong> {{ item.domain }}</li>
+{% endfor %}
+</ul>
+<br>
+
+{% elif object.task_name == 'simple_crawler' %}
+<h2>{{ object.itemsimplecrawler_set.all|length }} Items gathered:</h2>
+<br>
+{% for item in object.itemsimplecrawler_set.all %}
+<ul class="list-group">
+    <li class="list-group-item"><strong>Source code:</strong> {% if item.source_code|length > 400 %}{{ item.source_code|truncatechars:400 }}
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">Show full data
+                <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                {{ item.source_code }}
+            </ul>
+        </div>
+        {% else %}
+        {{ item.source_code }}
+        {% endif %}</li>
+    <li class="list-group-item"><strong>Url:</strong> {{ item.url }}</li>
+    <li class="list-group-item"><strong>Urls in page:</strong></li>
+    {% for e in item.list_of_subitems %}
+    {% if e.type == 'Simple Crawler url' %}
+        <li class="list-group-item list-group-item-secondary">{{ e.data }}</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+<br>
+{% endfor %}
+
+{% elif object.task_name == 'shodan_search' %}
+<h2>{{ object.itemshodansearch_set.all|length }} Items gathered:</h2>
+<br>
+{% for item in object.itemshodansearch_set.all %}
+<ul class="list-group">
+    <li class="list-group-item"><strong>IP:</strong> {{ item.ip }}</li>
+    <li class="list-group-item"><strong>shodan_id:</strong> {{ item.shodan_id }}</li>
+    <li class="list-group-item"><strong>location:</strong> {{ item.location }}</li>
+    <li class="list-group-item"><strong>port:</strong> {{ item.port }}</li>
+    <li class="list-group-item"><strong>Banner:</strong> {% if item.banner|length > 400 %}{{ item.banner|truncatechars:400 }}
+        <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" href="#">Show full data
+                <span class="caret"></span></a>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                {{ item.banner }}
+            </ul>
+        </div>
+        {% else %}
+        {{ item.banner }}
+        {% endif %}</li>
+    <li class="list-group-item"><strong>Hostnames:</strong></li>
+    {% for e in item.list_of_subitems %}
+    {% if e.type == 'Shodan Search hostname' %}
+        <li class="list-group-item list-group-item-secondary">{{ e.data }}</li>
+    {% endif %}
+    {% endfor %}
+    <li class="list-group-item"><strong>Domains:</strong></li>
+    {% for e in item.list_of_subitems %}
+    {% if e.type == 'Shodan Search domain' %}
+        <li class="list-group-item list-group-item-secondary">{{ e.data }}</li>
+    {% endif %}
+    {% endfor %}
+</ul>
+<br>
+{% endfor %}
+{% endif %}
+{% endblock %}

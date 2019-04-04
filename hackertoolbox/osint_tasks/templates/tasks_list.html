@@ -1,0 +1,61 @@
+{% extends 'base_osint.html' %}
+
+{% block content %}
+{% load bootstrap4 %}
+{% if request.path != '/osint/tasks/' %}
+<div class="alert alert-success" role="alert"><a href="{% url 'results' %}" class="alert-link">Task launch ! The result will soon be available in results page ...</a></div>
+{% endif %}
+<h3>Create new tasks:</h3>
+<br>
+{% bootstrap_button "Google Search" button_type="link" button_class="btn-secondary" href="/osint/tasks/gs_create/" %}
+{% bootstrap_button "PGP Search" button_type="link" button_class="btn-secondary" href="/osint/tasks/pgps_create/" %}
+{% bootstrap_button "Advanced Crawler" button_type="link" button_class="btn-secondary" href="/osint/tasks/advanced_crawler_create/" %}
+{% bootstrap_button "Certificate Transparency search" button_type="link" button_class="btn-secondary" href="/osint/tasks/ct_search_create/" %}
+{% bootstrap_button "Dns Lookup" button_type="link" button_class="btn-secondary" href="/osint/tasks/dns_lookup_create/" %}
+{% bootstrap_button "Simple Crawler" button_type="link" button_class="btn-secondary" href="/osint/tasks/simple_crawler_create/" %}
+{% bootstrap_button "Shodan Search" button_type="link" button_class="btn-secondary" href="/osint/tasks/shodan_search_create/" %}
+<br>
+{% if all_tasks %}
+<br>
+<h3>Bellow the list of the saved tasks:</h3>
+<br>
+    <ul class="list-group">
+        {% for task in all_tasks %}
+        <li class="list-group-item text-center">{{ task.name }}
+                {% if task.task_path == 'google_search' %}
+                <img src=/static/google_search.png class="img-fuild rounded float-left" style="max-height:35px">
+                <div class="btn-group float-right" role="group">
+                <a  href="{% url 'google_search_update' task.id %}" type="submit" class="btn btn-secondary">Update</a>
+                {% elif task.task_path == 'pgp_search' %}
+                <img src=/static/pgp_search.png class="img-fuild rounded float-left" style="max-height:35px">
+                <div class="btn-group float-right" role="group">
+                <a  href="{% url 'pgp_search_update' task.id %}" type="submit" class="btn btn-secondary">Update</a>
+                {% elif task.task_path == 'advanced_crawler' %}
+                <img src=/static/advanced_crawler.png class="img-fuild rounded float-left" style="max-height:35px">
+                <div class="btn-group float-right" role="group">
+                <a  href="{% url 'advanced_crawler_update' task.id %}" type="submit" class="btn btn-secondary">Update</a>
+                {% elif task.task_path == 'ct_search' %}
+                <img src=/static/ct_search.png class="img-fuild rounded float-left" style="max-height:35px">
+                <div class="btn-group float-right" role="group">
+                <a  href="{% url 'certificate_transparency_update' task.id %}" type="submit" class="btn btn-secondary">Update</a>
+                {% elif task.task_path == 'dns_lookup' %}
+                <img src=/static/dns_lookup.png class="img-fuild rounded float-left" style="max-height:35px">
+                <div class="btn-group float-right" role="group">
+                <a  href="{% url 'dns_lookup_update' task.id %}" type="submit" class="btn btn-secondary">Update</a>
+                {% elif task.task_path == 'simple_crawler' %}
+                <img src=/static/simple_crawler.png class="img-fuild rounded float-left" style="max-height:35px">
+                <div class="btn-group float-right" role="group">
+                <a  href="{% url 'simple_crawler_update' task.id %}" type="submit" class="btn btn-secondary">Update</a>
+                {% elif task.task_path == 'shodan_search' %}
+                <img src=/static/shodan_search.png class="img-fuild rounded float-left" style="max-height:35px">
+                <div class="btn-group float-right" role="group">
+                <a  href="{% url 'shodan_search_update' task.id %}" type="submit" class="btn btn-secondary">Update</a>
+                {% endif %}
+                <a  href="{% url 'task_delete' task.id %}" type="submit" class="btn btn-secondary">Delete</a>
+                <a  href="{% url 'run_task' task.id %}" type="submit" class="btn btn-secondary">Run now !</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

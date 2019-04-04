@@ -1,0 +1,22 @@
+[Unit]
+Description=Hacker toolobox for lazy hackers.
+After=network.target
+
+[Service]
+Type=forking
+User=daemon
+Group=daemon
+WorkingDirectory=/path/to/hackertoobox
+EnvironmentFile=/etc/hackertoolbox/hackertoolbox.conf
+ExecStart=/bin/sh -c '${CELERY_BIN} multi start ${CELERYD_NODES} \
+  -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} -E'
+ExecStop=/bin/sh -c '${CELERY_BIN} multi stopwait ${CELERYD_NODES} \
+  --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} -E'
+ExecReload=/bin/sh -c '${CELERY_BIN} multi restart ${CELERYD_NODES} \
+  -A ${CELERY_APP} --pidfile=${CELERYD_PID_FILE} \
+  --logfile=${CELERYD_LOG_FILE} --loglevel=${CELERYD_LOG_LEVEL} -E'
+
+[Install]
+WantedBy=multi-user.target

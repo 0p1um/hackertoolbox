@@ -1,0 +1,144 @@
+#!/usr/bin/python3
+import argparse
+import subprocess
+import os
+import shutil
+import sys
+import hackertoolbox
+
+
+# check sudo and env
+if os.getuid() != 0:
+    print('Must be run as root')
+    sys.exit(0)
+
+MODULE_PATH = os.path.dirname(hackertoolbox.__file__)
+toolbox_service_path ='/etc/systemd/system/hackertoolbox.service'
+beatd_service_path = '/etc/systemd/system/hackertoolbox-beatd.service'
+web_service_path = '/etc/systemd/system/hackertoolbox-web-interface.service'
+datasets_path = '/usr/share/var/datasets/'
+
+def check_init():
+    if not os.path.isfile('/etc/hackertoolbox/hackertoolbox.conf'):
+        print('Please run init command at least once to setup the database in order to use hackertoolbox')
+        sys.exit(0)
+    if not os.path.isdir(datasets_path):
+        print('Please run init command at least once to setup the database in order to use hackertoolbox')
+        sys.exit(0)
+
+def init_hacker_toolbox():
+    print('Initialisation of the database ...')
+    subprocess.Popen(['python3', 'manage.py', 'makemigrations'], cwd=MODULE_PATH).wait()
+    subprocess.Popen(['python3', 'manage.py', 'migrate'], cwd=MODULE_PATH).wait()
+    subprocess.Popen(['chmod', '777', MODULE_PATH+'/db.sqlite3']).wait()
+    subprocess.Popen(['chmod', '777', MODULE_PATH]).wait()
+    print('Setting symbolic link to chromedriver ...')
+    chromedriver_path = shutil.which('chromedriver')
+    if chromedriver_path is not None:
+        os.symlink(chromedriver_path, MODULE_PATH+'/bin/chromedriver')
+        print('chromedriver found, symbolic link created')
+    else:
+        print('chromedriver not found, verify that chromedriver binary is on your PATH\nAdvanced crawler module wont work without chromedriver, \
+                run "hackertoolbox init" again if you solved this issue')
+    print('Setting services files ...')
+    toolbox_service_original = open(toolbox_service_path, 'r').readlines()
+    beatd_service_original = open(beatd_service_path, 'r').readlines()
+    web_service_original = open(web_service_path, 'r').readlines()
+    with open(toolbox_service_path, 'w') as file:
+        for line in toolbox_service_original:
+            if 'WorkingDirectory=' in line:
+                line = 'WorkingDirectory='+str(MODULE_PATH)+'\n'
+            file.write(line)
+    with open(beatd_service_path, 'w') as file:
+        for line in beatd_service_original:
+            if 'WorkingDirectory=' in line:
+                line = 'WorkingDirectory='+str(MODULE_PATH)+'\n'
+            file.write(line)
+    with open(web_service_path, 'w') as file:
+        for line in web_service_original:
+            if 'WorkingDirectory=' in line:
+                line = 'WorkingDirectory='+str(MODULE_PATH)+'\n'
+            file.write(line)
+    subprocess.Popen(['systemctl', 'daemon-reload']).wait()
+    print('Successfully configured services files:\n%s\n%s\n%s' % (toolbox_service_path, beatd_service_path, web_service_path))
+
+def enable(elements=['daemon', 'scheduler', 'interface']):
+    check_init()
+    for element in elements:
+        if element == 'daemon':
+            subprocess.Popen(['systemctl', 'enable', 'hackertoolbox.service'])
+        elif element == 'scheduler':
+            subprocess.Popen(['systemctl', 'enable', 'hackertoolbox-beatd.service'])
+        elif element == 'interface':
+            subprocess.Popen(['systemctl', 'enable', 'hackertoolbox-web-interface.service'])
+        else:
+            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+
+def disable(elements=['daemon', 'scheduler', 'interface']):
+    check_init()
+    for element in elements:
+        if element == 'daemon':
+            subprocess.Popen(['systemctl', 'disable', 'hackertoolbox.service'])
+        elif element == 'scheduler':
+            subprocess.Popen(['systemctl', 'disable', 'hackertoolbox-beatd.service'])
+        elif element == 'interface':
+            subprocess.Popen(['systemctl', 'disable', 'hackertoolbox-web-interface.service'])
+        else:
+            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+
+def start_services(elements=['daemon','scheduler','interface']):
+    check_init()
+    for element in elements:
+        if element == 'daemon':
+            subprocess.Popen(['systemctl', 'start', 'hackertoolbox.service'])
+        elif element == 'scheduler':
+            subprocess.Popen(['systemctl', 'start', 'hackertoolbox-beatd.service'])
+        elif element == 'interface':
+            subprocess.Popen(['systemctl', 'start', 'hackertoolbox-web-interface.service'])
+        else:
+            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+
+def stop_services(elements=['daemon','scheduler','interface']):
+    check_init()
+    for element in elements:
+        if element == 'daemon':
+            subprocess.Popen(['systemctl', 'stop', 'hackertoolbox.service'])
+        elif element == 'scheduler':
+            subprocess.Popen(['systemctl', 'stop', 'hackertoolbox-beatd.service'])
+        elif element == 'interface':
+            subprocess.Popen(['systemctl', 'stop', 'hackertoolbox-web-interface.service'])
+        else:
+            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+
+parser = argparse.ArgumentParser(description='hacker-toobox control script')
+parser.add_argument('command', nargs='?')
+parser.add_argument('elements', nargs='?')
+args = parser.parse_args()
+print(args)
+
+if args.command == 'init':
+    init_hacker_toolbox()
+elif args.command == 'enable':
+    if args.elements != None:
+        elements = args.elements.split(',')
+        enable(elements)
+    else:
+        enable()
+elif args.command == 'disable':
+    if args.elements != None:
+        elements = args.elements.split(',')
+        disable(elements)
+    else:
+        disable()
+elif args.command == 'start':
+    if args.elements != None:
+        elements = args.elements.split(',')
+        start_services(elements)
+    else:
+        start_services()
+elif args.command == 'stop':
+    if args.elements != None:
+        elements = args.elements.split(',')
+        stop_services(elements)
+    else:
+        stop_services()

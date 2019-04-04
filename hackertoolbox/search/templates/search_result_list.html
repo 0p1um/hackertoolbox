@@ -1,0 +1,23 @@
+{% extends 'base_search.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Results list{% endblock %}
+
+{% block content %}
+{% if all_result %}
+<br>
+<h3>Bellow the list of searchs results:</h3>
+<br>
+    <ul class="list-group">
+        {% for result in all_result %}
+        <li class="list-group-item text-center">{{ result.search }}
+            <div class="btn-group float-right" role="group">
+                <a href="{% url 'search_result_detail' result.id %}" type="submit" class="btn btn-secondary">Detail</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+<h3>No results yet</h3>
+{% endif %}
+{% endblock %}

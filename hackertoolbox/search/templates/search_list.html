@@ -1,0 +1,20 @@
+{% extends 'base_search.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Search list{% endblock %}
+
+{% block content %}
+{% bootstrap_button "Create search" button_type="link" button_class="btn-secondary" href="/search/search_create/" %}
+<br>
+{% if all_search %}
+<br>
+<h3>Bellow the list of previous searchs:</h3>
+<br>
+    <ul class="list-group">
+        {% for search in all_search %}
+        <li class="list-group-item text-center">{{ search }}
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends 'base_search.html' %}
+
+{% block content %}
+{% load bootstrap4 %}
+<div id="formulaire" style="display:block">
+<form id="formulaire"method="POST">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+<button type="submit" class="btn btn-secondary">Let's go !</button>
+</form>
+</div>
+
+{% endblock %}
