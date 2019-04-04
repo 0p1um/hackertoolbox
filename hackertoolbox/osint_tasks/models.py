@@ -89,7 +89,7 @@ class Item(PolymorphicModel):
 class GoogleSearch(Task):
 
     query = models.CharField(max_length=1000, verbose_name='Query')
-    num = models.PositiveIntegerField(blank=True, null=True, verbose_name='Number of result to keep')
+    num = models.PositiveIntegerField(blank=True, null=True, default=10, verbose_name='Number of result to keep (10 maximum for free users)')
     date_restrict_d = models.PositiveIntegerField(blank=True, null=True, verbose_name='Date restriction: number of days old maximum for results')
     exact_terms = models.CharField(null=True, max_length=1000, blank=True, verbose_name='Exact terms to include in the search')
     file_type = models.CharField(null=True,max_length=4, choices=FILE_TYPE_CHOICES, blank=True, verbose_name='File type searched')

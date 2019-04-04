@@ -17,6 +17,13 @@ toolbox_service_path ='/etc/systemd/system/hackertoolbox.service'
 beatd_service_path = '/etc/systemd/system/hackertoolbox-beatd.service'
 web_service_path = '/etc/systemd/system/hackertoolbox-web-interface.service'
 datasets_path = '/usr/share/var/datasets/'
+chromedriver_symlink_path = MODULE_PATH+'/bin/chromedriver'
+django_db_path = MODULE_PATH+'/db.sqlite3'
+working_directory_line = 'WorkingDirectory=%s\n' % MODULE_PATH
+list_services = [{'name':'redis-server', 'file name':'redis-server.service', 'path':'/lib/systemd/system/redis-server.service'},\
+                {'name':'daemon', 'file name':'hackertoolbox.service', 'path':'/etc/systemd/system/hackertoolbox.service'},\
+                {'name':'daemon', 'file name':'hackertoolbox-beatd.service', 'path':'/etc/systemd/system/hackertoolbox-beatd.service'},\
+                {'name':'interface', 'file name':'hackertoolbox-web-interface.service', 'path':'/etc/systemd/system/hackertoolbox-web-interface.service'}]
 
 def check_init():
     if not os.path.isfile('/etc/hackertoolbox/hackertoolbox.conf'):
@@ -25,18 +32,27 @@ def check_init():
     if not os.path.isdir(datasets_path):
         print('Please run init command at least once to setup the database in order to use hackertoolbox')
         sys.exit(0)
+    if not os.path.isfile(toolbox_service_path):
+        print('Please run init command at least once to setup the database in order to use hackertoolbox')
+        sys.exit(0)
+    if not os.path.isfile(beatd_service_path):
+        print('Please run init command at least once to setup the database in order to use hackertoolbox')
+        sys.exit(0)
+    if not os.path.isfile(web_service_path):
+        print('Please run init command at least once to setup the database in order to use hackertoolbox')
+        sys.exit(0)
 
 def init_hacker_toolbox():
     print('Initialisation of the database ...')
     subprocess.Popen(['python3', 'manage.py', 'makemigrations'], cwd=MODULE_PATH).wait()
     subprocess.Popen(['python3', 'manage.py', 'migrate'], cwd=MODULE_PATH).wait()
-    subprocess.Popen(['chmod', '644', MODULE_PATH+'/db.sqlite3']).wait()
+    subprocess.Popen(['chmod', '644', django_db_path]).wait()
     subprocess.Popen(['chmod', '755', MODULE_PATH]).wait()
     subprocess.Popen(['chown','-R', 'daemon:daemon', MODULE_PATH]).wait()
     print('Setting symbolic link to chromedriver ...')
     chromedriver_path = shutil.which('chromedriver')
     if chromedriver_path is not None:
-        os.symlink(chromedriver_path, MODULE_PATH+'/bin/chromedriver')
+        subprocess.Popen(['ln', '-sfn', chromedriver_path, chromedriver_symlink_path]).wait()
         print('chromedriver found, symbolic link created')
     else:
         print('chromedriver not found, verify that chromedriver binary is on your PATH\nAdvanced crawler module wont work without chromedriver, \
@@ -45,21 +61,14 @@ def init_hacker_toolbox():
     toolbox_service_original = open(toolbox_service_path, 'r').readlines()
     beatd_service_original = open(beatd_service_path, 'r').readlines()
     web_service_original = open(web_service_path, 'r').readlines()
-    with open(toolbox_service_path, 'w') as file:
-        for line in toolbox_service_original:
-            if 'WorkingDirectory=' in line:
-                line = 'WorkingDirectory='+str(MODULE_PATH)+'\n'
-            file.write(line)
-    with open(beatd_service_path, 'w') as file:
-        for line in beatd_service_original:
-            if 'WorkingDirectory=' in line:
-                line = 'WorkingDirectory='+str(MODULE_PATH)+'\n'
-            file.write(line)
-    with open(web_service_path, 'w') as file:
-        for line in web_service_original:
-            if 'WorkingDirectory=' in line:
-                line = 'WorkingDirectory='+str(MODULE_PATH)+'\n'
-            file.write(line)
+    for service_model_file, service_path in [(toolbox_service_original, toolbox_service_path), \
+                            (beatd_service_original, beatd_service_path), \
+                            (web_service_original,web_service_path)]:
+        with open(service_path, 'w') as file:
+            for line in service_model_file:
+                if 'WorkingDirectory=' in line:
+                    line = working_directory_line
+                file.write(line)
     subprocess.Popen(['systemctl', 'daemon-reload']).wait()
     print('Successfully configured services files:\n%s\n%s\n%s' % (toolbox_service_path, beatd_service_path, web_service_path))
 
@@ -111,6 +120,14 @@ def stop_services(elements=['daemon','scheduler','interface']):
         else:
             print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
 
+def status(service):
+    is_active = subprocess.Popen(['systemctl', 'is-active', service], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    if is_active == 'active':
+        is_active = '\033[92m%s\033[0m' % is_active
+    else:
+        is_active = '\033[91m%s\033[0m' % is_active
+    return is_active
+
 parser = argparse.ArgumentParser(description='hacker-toobox control script')
 parser.add_argument('command', nargs='?')
 parser.add_argument('elements', nargs='?')
@@ -143,3 +160,6 @@ elif args.command == 'stop':
         stop_services(elements)
     else:
         stop_services()
+elif args.command == 'status':
+    for service in list_services:
+        print('Service: %s\nService file path: %s\nStatus: %s' % (service['name'], service['path'], status(service['file name'])))
