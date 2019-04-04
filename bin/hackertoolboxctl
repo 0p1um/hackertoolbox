@@ -30,8 +30,9 @@ def init_hacker_toolbox():
     print('Initialisation of the database ...')
     subprocess.Popen(['python3', 'manage.py', 'makemigrations'], cwd=MODULE_PATH).wait()
     subprocess.Popen(['python3', 'manage.py', 'migrate'], cwd=MODULE_PATH).wait()
-    subprocess.Popen(['chmod', '777', MODULE_PATH+'/db.sqlite3']).wait()
-    subprocess.Popen(['chmod', '777', MODULE_PATH]).wait()
+    subprocess.Popen(['chmod', '644', MODULE_PATH+'/db.sqlite3']).wait()
+    subprocess.Popen(['chmod', '755', MODULE_PATH]).wait()
+    subprocess.Popen(['chown','-R', 'daemon:daemon', MODULE_PATH]).wait()
     print('Setting symbolic link to chromedriver ...')
     chromedriver_path = shutil.which('chromedriver')
     if chromedriver_path is not None:

@@ -36,12 +36,6 @@ def advanced_crawler(url, depth=1, mobile_emulation=False, allow_external=False)
     links=[]
     links.append(url)
 
-    #test lines, to remove
-    with webdriver.Chrome(chrome_driver_path,chrome_options = chrome_options ) as driver:
-        print('driver path: %s' % chrome_driver_path)
-        driver.get(url)
-        print(driver.page_source)
-
     for i in range(depth):
 
         for url in links:
@@ -122,12 +116,10 @@ def google_search(query, num=None, dateRestrict=None, exactTerms=None, fileType=
       q=query, cx=google_cse_id, filter='0',
       num=num, dateRestrict=dateRestrict, exactTerms=exactTerms, fileType=fileType, gl=gl, linkSite=linkSite,\
       lr=lr, orTerms=orTerms, relatedSite=relatedSite, sort=sort, siteSearch=siteSearch, searchType=searchType ).execute()
-    print(res)
     return res
 
 @shared_task(name=('pgp_search'))
 def pgp_search(querry):
-    
     d = ["pgp.mit.edu","pgp.key-server.io"]
     q = querry.replace(' ','%20')
     data = {'data':[]}
@@ -158,7 +150,6 @@ def ct_search(keyword):
 
 @shared_task(name=('dns_lookup'))
 def dns_lookup(query, type_A=True, type_AAAA=False, type_CNAME=False, type_NS=False, type_MX=False, type_TXT=False, type_ALL=False):
-
     all_record_type = ['A','AAAA', 'AFSDB', 'APL', 'CAA', 'CDNSKEY', 'CERT', 'CNAME', 'DHCID', 'DLV', 'DNAME', 'DS', 'HIP', 'IPSECKEY', 'KEY', 'KX', \
     'LOC', 'MX', 'NAPTR', 'NS', 'NSEC', 'NSEC3', 'NSEC3PARAM', 'OPENPGPKEY', 'PTR', 'RRSIG', 'RP', 'SIG', 'SMIMEA', 'SOA', 'SRV', 'SSHFP', 'TA', 'TKEY', \
     'TLSA', 'TSIG', 'TXT', 'URI']
@@ -246,9 +237,7 @@ def dns_lookup(query, type_A=True, type_AAAA=False, type_CNAME=False, type_NS=Fa
 
 @shared_task(name=('simple_crawler'))
 def simple_crawler(url, depth=1, allow_external=False):
-
     domain = url.split('/')[2]
-    print(domain)
     current_depth = 0
     data = {'data':[]}
     links = []
@@ -280,7 +269,7 @@ def simple_crawler(url, depth=1, allow_external=False):
 
 @shared_task(name=('shodan_search'))
 def shodan_search(query):
-        #importing user-specific settings:
+    #importing user-specific settings:
     with open(settings.TASKS_CONF_FILE, 'r') as file:
         for line in file:
             if 'SHODAN_API_KEY' in line:
@@ -293,7 +282,6 @@ def shodan_search(query):
         results = api.search(query)
 
         for result in results['matches']:
-            # print('IP: {}'.format(result['ip_str']))
             ip = result['ip_str']
             hostnames = result['hostnames']
             domains = result['domains']
