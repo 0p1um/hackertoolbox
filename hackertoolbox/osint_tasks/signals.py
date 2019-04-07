@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import post_save, pre_delete, m2m_changed
 from django.dispatch import receiver
 from django_celery_results.models import TaskResult
 from .models import Job, ResultFromTask, Task, ResultGoogleSearch, ItemGoogleSearch, ResultPgpSearch, ItemPgpSearch, ResultAdvancedCrawler, ItemAdvancedCrawler,\
@@ -9,11 +9,12 @@ import json
 
 
 #function to receive signals when new tasks are created and start tasks to do in celery daemon
-@receiver([post_save], sender=Job)
-def job_save_handler(sender, instance, created, update_fields, **kwargs):
-    for task in instance.tasks.all():
-        PeriodicTask.objects.filter(name=instance.name+'-'+task.name).delete()
-    instance.create_periodic_task()
+@receiver([m2m_changed], sender=Job.tasks.through)
+def job_save_handler(sender, instance, action, **kwargs):
+    if action == 'post_add':
+        for task in instance.tasks.all():
+            PeriodicTask.objects.filter(name=instance.name+'-'+task.name).delete()
+        instance.create_periodic_task()
 
 @receiver([pre_delete], sender=Job)
 def job_del_handler(sender, instance, **kwargs):

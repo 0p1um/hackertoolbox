@@ -48,7 +48,7 @@ class Job(PolymorphicModel):
     ,validators=[crontab_validator])
     day_of_the_week = models.CharField(max_length=6,default='*', verbose_name="The day(s) of the week on which the command will be executed. (0-7, 7=Sun or use names, ranges, or divided, *=all)"\
     ,validators=[crontab_validator])
-    tasks = models.ManyToManyField(Task)
+    tasks = models.ManyToManyField(Task) 
     is_active = models.BooleanField(default=1)
 
     def create_periodic_task(self):
