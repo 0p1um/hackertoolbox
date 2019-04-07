@@ -20,10 +20,10 @@ datasets_path = '/usr/share/var/datasets/'
 chromedriver_symlink_path = MODULE_PATH+'/bin/chromedriver'
 django_db_path = MODULE_PATH+'/db.sqlite3'
 working_directory_line = 'WorkingDirectory=%s\n' % MODULE_PATH
-list_services = [{'name':'redis-server', 'file name':'redis-server.service', 'path':'/lib/systemd/system/redis-server.service'},\
-                {'name':'daemon', 'file name':'hackertoolbox.service', 'path':'/etc/systemd/system/hackertoolbox.service'},\
-                {'name':'daemon', 'file name':'hackertoolbox-beatd.service', 'path':'/etc/systemd/system/hackertoolbox-beatd.service'},\
-                {'name':'interface', 'file name':'hackertoolbox-web-interface.service', 'path':'/etc/systemd/system/hackertoolbox-web-interface.service'}]
+list_elements = {'redis-server':{'name':'redis-server', 'file name':'redis-server.service', 'path':'/lib/systemd/system/redis-server.service'},\
+        'daemon':{'name':'daemon', 'file name':'hackertoolbox.service', 'path':'/etc/systemd/system/hackertoolbox.service'},\
+        'scheduler':{'name':'scheduler', 'file name':'hackertoolbox-beatd.service', 'path':'/etc/systemd/system/hackertoolbox-beatd.service'},\
+        'interface':{'name':'interface', 'file name':'hackertoolbox-web-interface.service', 'path':'/etc/systemd/system/hackertoolbox-web-interface.service'}}
 
 def check_init():
     if not os.path.isfile('/etc/hackertoolbox/hackertoolbox.conf'):
@@ -72,94 +72,62 @@ def init_hacker_toolbox():
     subprocess.Popen(['systemctl', 'daemon-reload']).wait()
     print('Successfully configured services files:\n%s\n%s\n%s' % (toolbox_service_path, beatd_service_path, web_service_path))
 
-def enable(elements=['daemon', 'scheduler', 'interface']):
+def service_ctrl(cmd, elements):
     check_init()
     for element in elements:
-        if element == 'daemon':
-            subprocess.Popen(['systemctl', 'enable', 'hackertoolbox.service'])
-        elif element == 'scheduler':
-            subprocess.Popen(['systemctl', 'enable', 'hackertoolbox-beatd.service'])
-        elif element == 'interface':
-            subprocess.Popen(['systemctl', 'enable', 'hackertoolbox-web-interface.service'])
-        else:
-            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+        element = list_elements[element]
+        try:
+            subprocess.Popen(['systemctl', cmd, element['file name']]).wait()
+            print('%s element: %s' % (cmd, element['name']))
+        except:
+            print('Failed to %s the element %s\nCheck the logs of the services for more information:\nsudo journalctl -n %s' % (cmd, element['name'], element['file name']))
 
-def disable(elements=['daemon', 'scheduler', 'interface']):
-    check_init()
+def status(elements):
     for element in elements:
-        if element == 'daemon':
-            subprocess.Popen(['systemctl', 'disable', 'hackertoolbox.service'])
-        elif element == 'scheduler':
-            subprocess.Popen(['systemctl', 'disable', 'hackertoolbox-beatd.service'])
-        elif element == 'interface':
-            subprocess.Popen(['systemctl', 'disable', 'hackertoolbox-web-interface.service'])
+        element = list_elements[element]
+        is_active = subprocess.Popen(['systemctl', 'is-active', element['file name']], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        is_active = is_active.stdout.read().decode('utf-8')
+        if is_active == 'active\n':
+            is_active = '\033[92m%s\033[0m' % is_active
         else:
-            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+            is_active = '\033[91m%s\033[0m' % is_active
+        print('Element: %s\nService name: %s\nService file path: %s\nStatus: %s' % (element['name'], element['file name'], element['path'], is_active))
 
-def start_services(elements=['daemon','scheduler','interface']):
-    check_init()
-    for element in elements:
-        if element == 'daemon':
-            subprocess.Popen(['systemctl', 'start', 'hackertoolbox.service'])
-        elif element == 'scheduler':
-            subprocess.Popen(['systemctl', 'start', 'hackertoolbox-beatd.service'])
-        elif element == 'interface':
-            subprocess.Popen(['systemctl', 'start', 'hackertoolbox-web-interface.service'])
-        else:
-            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+help_command="""Controls hackertoolbox program, chose an action to perform:
+    init                initialize hackertoolbox program, create the database, create services files ... 
+                        Running init is needed before to use hackertoolbox program
+    enable              enable the elements of hackertoolbox, once enable they will start automaticaly at boot
+    disable             disable the elements of hackertoolbox, once disable they wont start automaticaly at boot
+    start               start the elements of hackertoolbox, once they run you can use the program
+    stop                stop the elements of hackertoolbox
+    status              show the status of the differents elements of hackertoolbox
+    """
 
-def stop_services(elements=['daemon','scheduler','interface']):
-    check_init()
-    for element in elements:
-        if element == 'daemon':
-            subprocess.Popen(['systemctl', 'stop', 'hackertoolbox.service'])
-        elif element == 'scheduler':
-            subprocess.Popen(['systemctl', 'stop', 'hackertoolbox-beatd.service'])
-        elif element == 'interface':
-            subprocess.Popen(['systemctl', 'stop', 'hackertoolbox-web-interface.service'])
-        else:
-            print('%s is not a valid service to enable, you can enable: daemon, scheduler, interface' % element)
+help_elements="""Choose elements of hackertoolbox to perform the command on, by default the command is performed on all elements
+Hackertoolbox has 3 elements:
+    daemon              the daemon that run in the background to launch the tasks you set in hackertoolbox
+    scheduler           the scheduler that run in background and schedule the tasks to send to the daemon
+    interface           the web interface you can access to create tasks, by default on 0.0.0.0:8000, 
+                        be sure the interface is not accessible from internet before launching it
+    redis-server        redis-server is used as a message broker, it is required to use hackertoolbox, you should have installed it independantly
+"""
 
-def status(service):
-    is_active = subprocess.Popen(['systemctl', 'is-active', service], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    if is_active == 'active':
-        is_active = '\033[92m%s\033[0m' % is_active
-    else:
-        is_active = '\033[91m%s\033[0m' % is_active
-    return is_active
+def choices_description(help_str):
+    return help_str
 
-parser = argparse.ArgumentParser(description='hacker-toobox control script')
-parser.add_argument('command', nargs='?')
-parser.add_argument('elements', nargs='?')
+parser = argparse.ArgumentParser(description='hackertoobox control script', formatter_class=argparse.RawTextHelpFormatter)
+parser.add_argument('command', type=str, choices=['init', 'enable', 'disable', 'stop', 'start', 'status'], help=choices_description(help_command), metavar='command')
+parser.add_argument('-e', '--elements', type=str, choices=['daemon', 'scheduler', 'interface', 'redis-server'], help=choices_description(help_elements), nargs='+', \
+        default=['daemon', 'scheduler', 'interface', 'redis-server'], metavar='element1 element2 ...')
 args = parser.parse_args()
 print(args)
+elements = args.elements
+cmd = args.command
 
-if args.command == 'init':
+if cmd == 'init':
     init_hacker_toolbox()
-elif args.command == 'enable':
-    if args.elements != None:
-        elements = args.elements.split(',')
-        enable(elements)
-    else:
-        enable()
-elif args.command == 'disable':
-    if args.elements != None:
-        elements = args.elements.split(',')
-        disable(elements)
-    else:
-        disable()
-elif args.command == 'start':
-    if args.elements != None:
-        elements = args.elements.split(',')
-        start_services(elements)
-    else:
-        start_services()
-elif args.command == 'stop':
-    if args.elements != None:
-        elements = args.elements.split(',')
-        stop_services(elements)
-    else:
-        stop_services()
-elif args.command == 'status':
-    for service in list_services:
-        print('Service: %s\nService file path: %s\nStatus: %s' % (service['name'], service['path'], status(service['file name'])))
+elif cmd == 'status':
+    status(elements)
+else:
+    service_ctrl(cmd, elements)
+
