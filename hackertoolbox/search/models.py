@@ -24,8 +24,8 @@ class Search(models.Model):
 
     def run(self):
         print('run method !')
-        result = Result(search=self)
-        result.save()
+#        result = Result(search=self)
+#        result.save()
         if self.all_datasets:
             for dataset in Dataset.objects.all():
                 query = self.query

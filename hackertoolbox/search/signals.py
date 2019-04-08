@@ -1,14 +1,16 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, m2m_changed
 from django.dispatch import receiver
 from .models import Search, Result, Item, Dataset
 from django_celery_results.models import TaskResult
 import json
 
 
-@receiver([post_save], sender=Search)
-def search_save_handler(sender, instance, created, update_fields, **kwargs):
-    print(instance.query)
-    instance.run()
+#function to receive signals when new tasks are created and start tasks to do in celery daemon
+@receiver([m2m_changed], sender=Search.datasets.through)
+def search_save_handler(sender, instance, action, **kwargs):
+    if action == 'post_add':
+        print(instance.query)
+        instance.run()
 
 @receiver([post_save], sender=TaskResult)
 def search_dataset_result(sender, instance, **kwargs):
