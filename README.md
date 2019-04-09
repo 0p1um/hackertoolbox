@@ -74,3 +74,38 @@ To stop the web interface do:
 sudo hackertoolboxctl stop -e interface
 
 Do hackertoolboxctl -h to see the help of the command and all the options you can use.
+
+# Screenshots
+
+## OSINT tool
+Tasks:
+![tasks_list](screenshots/tasks_list.png)
+
+Create DNS lookup task:
+![create_dns_task](screenshots/create_dns_task.png)
+
+Create Certificate Transparency task:
+![create_ct_task](screenshots/create_ct_task.png)
+
+Create OSINT scheduled job:
+![create_job](screenshots/create_job.png)
+
+OSINT Tasks results list view:
+![list_osint_results](screenshots/list_osint_results.png)
+
+DNS lookup result:
+![dns_result_detail](screenshots/dns_result_detail.png)
+
+Tasks data gathered items view:
+![items_osint](screenshots/items_osint.png)
+
+## Search in local datasets
+
+Datasets view:
+![datasets](screenshots/datasets.png)
+
+Create search in local datasets:
+![search_in_dataset](screenshots/search_in_dataset.png)
+
+Result of search:
+![result_datasets](screenshots/result_datasets.png)
