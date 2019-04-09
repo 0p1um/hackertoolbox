@@ -37,4 +37,40 @@ In the Search cathegory you can then search for a query and select in what datas
 As soon as the search end, the result will be available in the Result cathegory, with the metadata associated with the dataset where you found a result, letting you know for example what is the cipher algorithm for the hash found for example.
 
 # Installation
+The installation has been tested in Debian sid 
+## Dependancies
+Install python3 version > 3.6 and pip
+sudo apt install python3 python3-pip
 
+Install redis-server, redis is used as a message broker for communicating between the daemon of the tools and the interface
+sudo apt install redis-server
+
+Install chromium-driver, it will be used by the advanced crawler tool to do browser simulation.
+sudo apt install chromium-driver
+
+## Clone the project:
+git clone https://github.com/0p1um/hackertoolbox.git
+
+## Move in the project folder
+cd hackertoolbox
+
+## Install using pip
+To install this project with pip you need to do it as root. With the following command:
+sudo pip3 install --no-binary :all: .
+
+The options --no-binary :all: are mandatory for the installation to avoid a bug in wheel when using absolute path during installation
+
+## Initialize project
+To start using this project you need to initialize the database, and install all services and configuration files needed. 
+Run this command as root to do it:
+sudo hackertoolboxctl init
+
+# Usage
+You can manage hackertoolbox by using the command hackertoolboxctl as root
+For exemple, to start all the component of hackertoolbox do:
+sudo hackertoolboxctl start
+
+To stop the web interface do:
+sudo hackertoolboxctl stop -e interface
+
+Do hackertoolboxctl -h to see the help of the command and all the options you can use.
