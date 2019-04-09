@@ -19,68 +19,68 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '6*y)a4s7r%5$n6mh^!hi8n%)@v@-#a6!oi89m45)&ac22%x4%z'
+SECRET_KEY = "6*y)a4s7r%5$n6mh^!hi8n%)@v@-#a6!oi89m45)&ac22%x4%z"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'osint_tasks',
-    'search',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'bootstrap4',
-    'django_celery_results',
-    'django_celery_beat',
+    "osint_tasks",
+    "search",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "bootstrap4",
+    "django_celery_results",
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = 'toolbox.urls'
+ROOT_URLCONF = "toolbox.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [(os.path.join(BASE_DIR, 'templates')),],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [(os.path.join(BASE_DIR, "templates"))],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ]
         },
-    },
+    }
 ]
 
-WSGI_APPLICATION = 'toolbox.wsgi.application'
+WSGI_APPLICATION = "toolbox.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
     }
 }
 
@@ -90,26 +90,20 @@ DATABASES = {
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
     },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = "UTC"
 
 USE_I18N = True
 
@@ -118,106 +112,74 @@ USE_L10N = True
 USE_TZ = True
 
 
-#default bootstrap4 settings:
+# default bootstrap4 settings:
 # Default settings
 
 BOOTSTRAP4 = {
-
     # The complete URL to the Bootstrap CSS file
     # Note that a URL can be either a string,
     # e.g. "https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css",
     # or a dict like the default value below.
-    "css_url": {
-        "href": "/static/bootstrap.min.css",
-    },
-
+    "css_url": {"href": "/static/bootstrap.min.css"},
     # The complete URL to the Bootstrap JavaScript file
-    "javascript_url": {
-        "url": "/static/bootstrap.min.js",
-    },
-
+    "javascript_url": {"url": "/static/bootstrap.min.js"},
     # The complete URL to the Bootstrap CSS file (None means no theme)
     "theme_url": None,
-
     # The URL to the jQuery JavaScript file (full)
-    "jquery_url": {
-        "url": "/static/jquery-3.3.1.min.js",
-    },
-
+    "jquery_url": {"url": "/static/jquery-3.3.1.min.js"},
     # The URL to the jQuery JavaScript file (slim)
-    "jquery_slim_url": {
-        "url": "/static/jquery-3.3.1.slim.min.js",
-    },
-
+    "jquery_slim_url": {"url": "/static/jquery-3.3.1.slim.min.js"},
     # The URL to the Popper.js JavaScript file (slim)
-    "popper_url": {
-        "url": "/static/popper.min.js",
-    },
-
+    "popper_url": {"url": "/static/popper.min.js"},
     # Put JavaScript in the HEAD section of the HTML document (only relevant if you use bootstrap4.html)
-    'javascript_in_head': False,
-
+    "javascript_in_head": False,
     # Include jQuery with Bootstrap JavaScript False|falsy|slim|full (default=False)
     # False - means tag bootstrap_javascript use default value - `falsy` and does not include jQuery)
-    'include_jquery': True,
-
+    "include_jquery": True,
     # Label class to use in horizontal forms
-    'horizontal_label_class': 'col-md-3',
-
+    "horizontal_label_class": "col-md-3",
     # Field class to use in horizontal forms
-    'horizontal_field_class': 'col-md-9',
-
+    "horizontal_field_class": "col-md-9",
     # Set placeholder attributes to label if no placeholder is provided
-    'set_placeholder': True,
-
+    "set_placeholder": True,
     # Class to indicate required (better to set this in your Django form)
-    'required_css_class': '',
-
+    "required_css_class": "",
     # Class to indicate error (better to set this in your Django form)
-    'error_css_class': 'has-error',
-
+    "error_css_class": "has-error",
     # Class to indicate success, meaning the field has valid input (better to set this in your Django form)
-    'success_css_class': 'has-success',
-
+    "success_css_class": "has-success",
     # Renderers (only set these if you have studied the source and understand the inner workings)
-    'formset_renderers':{
-        'default': 'bootstrap4.renderers.FormsetRenderer',
-    },
-    'form_renderers': {
-        'default': 'bootstrap4.renderers.FormRenderer',
-    },
-    'field_renderers': {
-        'default': 'bootstrap4.renderers.FieldRenderer',
-        'inline': 'bootstrap4.renderers.InlineFieldRenderer',
+    "formset_renderers": {"default": "bootstrap4.renderers.FormsetRenderer"},
+    "form_renderers": {"default": "bootstrap4.renderers.FormRenderer"},
+    "field_renderers": {
+        "default": "bootstrap4.renderers.FieldRenderer",
+        "inline": "bootstrap4.renderers.InlineFieldRenderer",
     },
 }
 
 # static files path
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # path for the config file of the tasks:
-TASKS_CONF_FILE = BASE_DIR + '/tasks.conf'
+TASKS_CONF_FILE = BASE_DIR + "/tasks.conf"
 
 # path for the chromedriver used in advanced crawler tasks
-CHROME_DRIVER_PATH = BASE_DIR + '/bin/chromedriver'
+CHROME_DRIVER_PATH = BASE_DIR + "/bin/chromedriver"
 
 
 ##### Celery settings
-CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_BROKER_URL = "redis://localhost:6379"
 
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
 
 # Setting with the path of the datasets folder
-DATASETS_PATH = '/usr/share/var/datasets'
+DATASETS_PATH = "/usr/share/datasets"
 
 # path for the binary sift, very efficient binary to search text in files (like a super-grep)
-SIFT_BIN = BASE_DIR + '/bin/sift'
-
+SIFT_BIN = BASE_DIR + "/bin/sift"

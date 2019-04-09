@@ -1,2 +1,1 @@
-default_app_config = 'search.apps.SearchConfig'
-
+default_app_config = "search.apps.SearchConfig"

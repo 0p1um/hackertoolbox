@@ -1,1 +1,1 @@
-default_app_config = 'osint_tasks.apps.OsintTasksConfig'
+default_app_config = "osint_tasks.apps.OsintTasksConfig"

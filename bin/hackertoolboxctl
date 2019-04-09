@@ -16,7 +16,7 @@ MODULE_PATH = os.path.dirname(hackertoolbox.__file__)
 toolbox_service_path ='/etc/systemd/system/hackertoolbox.service'
 beatd_service_path = '/etc/systemd/system/hackertoolbox-beatd.service'
 web_service_path = '/etc/systemd/system/hackertoolbox-web-interface.service'
-datasets_path = '/usr/share/var/datasets/'
+datasets_path = '/usr/share/datasets/'
 chromedriver_symlink_path = MODULE_PATH+'/bin/chromedriver'
 django_db_path = MODULE_PATH+'/db.sqlite3'
 working_directory_line = 'WorkingDirectory=%s\n' % MODULE_PATH
@@ -120,7 +120,6 @@ parser.add_argument('command', type=str, choices=['init', 'enable', 'disable', '
 parser.add_argument('-e', '--elements', type=str, choices=['daemon', 'scheduler', 'interface', 'redis-server'], help=choices_description(help_elements), nargs='+', \
         default=['daemon', 'scheduler', 'interface', 'redis-server'], metavar='element1 element2 ...')
 args = parser.parse_args()
-print(args)
 elements = args.elements
 cmd = args.command
 
