@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+
+{% block title %}Hackertoolbox{% endblock %}
+
+{% block content %}
+<h3>Welcome in hackertoolbox, this is a program for lazy hackers who want to easily run and schedule boring tasks. Select a tool bellow:</h3>
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">SEARCH LOCAL DATASETS</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Search stuff in local datasets</h6>
+        <p class="card-text">This tool is able to perform very fast search in local datasets (using sift, a faster grep). You can add datasets by putting folders of your dataset in the datasets folder (/usr/share/datasets/). Dont forget to add a info.json file in your dataset folder, this file is used to gather metadata about the dataset.</p>
+        <a href="{% url 'search_home' %}" class="btn btn-primary">Access tool</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title">OSINT Tool</h5>
+        <h6 class="card-subtitle mb-2 text-muted">Plan and launch osint tasks, or analyses osint gathered data</h6>
+        <p class="card-text">Here you can manage osint tasks, like google search, shodan search and more. You can also view and analyses the data you have gathered previously.</p>
+        <a href="{% url 'osint_home' %}" class="btn btn-primary">Access tool</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

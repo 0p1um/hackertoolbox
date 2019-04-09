@@ -1,0 +1,5 @@
+{"name":"Example DB",
+"date":"01/2019",
+"format":"md5",
+"compromised_data":"username,password",
+"description":"Example of leaked database, to add a leaked database you just need to add a folder with text files in it containing the leaked data. And you need to add in your folder a file info.json, containing metadata about the database, in json format. info.json is mandatory, it should contain: Name of the DB, date of the leak, compromised data, description"}
